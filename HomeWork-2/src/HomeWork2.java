@@ -8,6 +8,7 @@ public class HomeWork2 {
     public static final double EPS = Math.pow(10, -K);
 
     public static void main(String[] args) {
+
         LinkedList<Operationable1> equations1 = new LinkedList<>(); // Исходные уравнения задания 1
         LinkedList<Operationable21> equations21 = new LinkedList<>(); // Система уравнений задания 2.1
         LinkedList<Operationable22> equations22 = new LinkedList<>(); // Система уравнений задания 2.2
