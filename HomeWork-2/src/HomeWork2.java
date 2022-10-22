@@ -4,8 +4,13 @@ import java.util.Map;
 
 public class HomeWork2 {
     public static final int A = 2;
-    public static final int K = 4;
+    public static final int K = 3;
     public static final double EPS = Math.pow(10, -K);
+
+    public static final int BEGIN_SEGMENT = -10;
+    public static final int END_SEGMENT = 10;
+    public static final double STEP = 0.5;
+    public static final int CH_DER_NUM = 4;
 
     public static void main(String[] args) {
 
@@ -15,15 +20,15 @@ public class HomeWork2 {
         LinkedList<Operationable1> firstDerivatives1 = new LinkedList<>(); // Первые производные уравненений задания 1
         LinkedList<Operationable21> chDerivatives21 = new LinkedList<>(); // Частные производные задания 2.1
         LinkedList<Operationable22> chDerivatives22 = new LinkedList<>(); // Частные производные задания 2.2
-        String[] equationsStr1 = new String[]{"x^3+x^2-x+1/2=0", "(e^x)/A=x+1", "x^3-20x+1=0", "2^x+x^2-2=0",
-                "xln(x+2)-1+x^2=0", "(x^3)/A=Acos(x)"}; // Набор уравнений задания 1.1 в формате String для вывода
+        // Набор уравнений задания 1.1 в формате String для вывода
+        String[] equationsStr1 = new String[]{"x^3+x^2-x+1/2=0", "(e^x)/A=x+1", "x^3-20x+1=0", "2^x+x^2-2=0", "xln(x+2)-1+x^2=0", "(x^3)/A=Acos(x)"};
 
         equations1.add(x -> Math.pow(x, 3) + Math.pow(x, 2) - x + 1. / 2);
         equations1.add(x -> Math.pow(Math.E, x) / A - x - 1);
         equations1.add(x -> Math.pow(x, 3) - 20 * x + 1);
         equations1.add(x -> Math.pow(2, x) + Math.pow(x, 2) - 2);
         equations1.add(x -> x * Math.log(x + 2) - 1 + Math.pow(x, 2));
-        equations1.add(x -> Math.pow(x, 3) - A * Math.cos(x));
+        equations1.add(x -> Math.pow(x, 3) / A - A * Math.cos(x));
 
         firstDerivatives1.add(x -> 3 * Math.pow(x, 2) + 2 * x - 1);
         firstDerivatives1.add(x -> Math.pow(Math.E, x) / A - 1);
@@ -39,18 +44,14 @@ public class HomeWork2 {
         LinkedList<Point> listOfPints5 = new LinkedList<>();
         LinkedList<Point> listOfPints6 = new LinkedList<>();
 
-        listOfPints1.add(new Point(-1.7));
-        listOfPints2.add(new Point(-0.8));
-        listOfPints2.add(new Point(1.7));
-        listOfPints3.add(new Point(-4.5));
-        listOfPints3.add(new Point(0.1));
-        listOfPints3.add(new Point(4.5));
-        listOfPints4.add(new Point(-1.3));
-        listOfPints4.add(new Point(0.7));
-        listOfPints5.add(new Point(-1));
-        listOfPints5.add(new Point(0.6));
-        listOfPints6.add(new Point(1.2));
-        
+        LinkedList<LinkedList<Point>> listOfListsPoints = new LinkedList<>();
+        listOfListsPoints.add(listOfPints1);
+        listOfListsPoints.add(listOfPints2);
+        listOfListsPoints.add(listOfPints3);
+        listOfListsPoints.add(listOfPints4);
+        listOfListsPoints.add(listOfPints5);
+        listOfListsPoints.add(listOfPints6);
+
         double[] points21 = new double[]{1.1, 1, 1, 0.6, -1};
         double[] points22 = new double[]{0.4, 0.4, 0.5, 0.6, 1};
 
@@ -87,6 +88,7 @@ public class HomeWork2 {
         chDerivatives22.add((x, y) -> 3 * Math.pow(y, 2));
 
         System.out.println("----ЗАДАНИЕ 1----");
+        findSegments(equations1, listOfListsPoints);
         simpleIterationMethod(mapOfEquations, equations1, firstDerivatives1);
 
         System.out.println("\n----ЗАДАНИЕ 2.1----\n");
@@ -128,6 +130,19 @@ public class HomeWork2 {
         }
     }
 
+    // Локализация корней для МПИ
+    public static void findSegments(LinkedList<Operationable1> equations1, LinkedList<LinkedList<Point>> listOfListsPoints) {
+        for (int i = 0; i < equations1.size(); ++i) {
+            for (double j = BEGIN_SEGMENT; j <= END_SEGMENT; j += STEP) {
+                if (equations1.get(i).calculate(j) * equations1.get(i).calculate(j + STEP) < 0) {
+                    listOfListsPoints.get(i).add(new Point((j + j + STEP) / 2));
+                } else if (equations1.get(i).calculate(j) == 0) {
+                    listOfListsPoints.get(i).add(new Point((j)));
+                }
+            }
+        }
+    }
+
     // Поиск обратной матрицы для метода Ньютона
     public static void obrMatrix(double[][] a) {
         double[][] firstMatrix = new double[2][2];
@@ -145,7 +160,7 @@ public class HomeWork2 {
     // Метод Ньютона (для задания 2.1)
     public static void newtonMethod(double[] points21, double[] points22, LinkedList<Operationable21> chDerivatives21,
                                     LinkedList<Operationable21> equations21, LinkedList<Parameter> parametersList) {
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < CH_DER_NUM; ++i) {
             System.out.println("\nПараметры " + i);
             double x = points21[i];
             double y = points22[i];
@@ -191,8 +206,8 @@ public class HomeWork2 {
     // Метод Ньютона (для задания 2.2)
     public static void newtonMethodMod2(double[] points21, double[] points22, LinkedList<Operationable22> chDerivatives22,
                                         LinkedList<Operationable22> equations22) {
-        double x = points21[4];
-        double y = points22[4];
+        double x = points21[CH_DER_NUM];
+        double y = points22[CH_DER_NUM];
         int iterationNum = 1;
         double[][] a = new double[2][2];
         double dx, dy, norm1, norm2;
@@ -216,7 +231,7 @@ public class HomeWork2 {
             System.out.println("x2 = " + String.format("%.8f", y));
             iterationNum++;
         }
-        while (norm1 >= EPS  && norm2 >= EPS);
+        while (norm1 >= EPS && norm2 >= EPS);
     }
 
     // Интерфейс с методом calculate для задания 1
