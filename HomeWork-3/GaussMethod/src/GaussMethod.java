@@ -16,10 +16,6 @@ public class GaussMethod {
 
         fileReading(listOfMatrices);
 
-        for (double[][] system : listOfMatrices) {
-            System.out.println(Arrays.deepToString(system)); // Вывод массива
-        }
-
         // Выполнение метода Гаусса
         for (int i = 0; i < listOfMatrices.size(); ++i) {
             boolean isCompatibleSystem;
