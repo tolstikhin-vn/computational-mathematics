@@ -11,8 +11,6 @@ import java.util.LinkedList;
 
 public class GaussMethod {
 
-    private static final int NUM_OF_SYSTEMS = 5;
-
     public static void main(String[] args) {
         LinkedList<double[][]> listOfMatrices = new LinkedList<>(); // Коллекция из массивов систем
 
