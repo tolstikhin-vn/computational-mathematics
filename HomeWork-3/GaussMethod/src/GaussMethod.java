@@ -1,24 +1,26 @@
 // Методом Гаусса найдите решение СЛАУ
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class GaussMethod {
 
+    private static final int NUM_OF_SYSTEMS = 5;
+
     public static void main(String[] args) {
-
-        // Набор массивов, состоящих из коэффициентов систем уравнений при неизвестных
-        double[][] system1 = new double[][]{{2, 2, -1, 1, 4}, {4, 3, -1, 2, 6}, {8, 5, -3, 4, 12}, {3, 3, -2, 2, 6}};
-        double[][] system2 = new double[][]{{1, 7, -9, -8, -7}, {-3, -18, 23, 28, 5}, {0, -3, 6, -1, 8}, {-1, -1, 1, 18, -29}};
-        double[][] system3 = new double[][]{{3, -3, 7, -4, 0}, {-6, 9, -21, 9, 9}, {9, -12, 30, -22, -2}, {6, 0, 6, -31, 37}};
-        double[][] system4 = new double[][]{{9, -5, -6, 3, -8}, {1, -7, 1, 0, 38}, {3, -4, 9, 0, 47}, {6, -1, 9, 8, -8}};
-        double[][] system5 = new double[][]{{-6, -5, -3, -8, 101}, {5, -1, -5, -4, 51}, {-6, 0, 5, 5, -53}, {-7, -2, 8, 5, -63}};
-
         LinkedList<double[][]> listOfMatrices = new LinkedList<>(); // Коллекция из массивов систем
-        listOfMatrices.add(system1);
-        listOfMatrices.add(system2);
-        listOfMatrices.add(system3);
-        listOfMatrices.add(system4);
-        listOfMatrices.add(system5);
+
+        fileReading(listOfMatrices);
+
+        for (double[][] system : listOfMatrices) {
+            System.out.println(Arrays.deepToString(system)); // Вывод массива
+        }
 
         // Выполнение метода Гаусса
         for (int i = 0; i < listOfMatrices.size(); ++i) {
@@ -35,6 +37,40 @@ public class GaussMethod {
                 for (int j = 0; j < result.length; ++j) {
                     System.out.println("x" + (j + 1) + " = " + Math.round(result[j]));
                 }
+            } else {
+                System.out.println("Система несовместна. Решений нет.");
+            }
+        }
+    }
+
+    // Чтение файла, содержащего системы уравнений
+    public static void fileReading(LinkedList<double[][]> listOfMatrices) {
+        File file = new File("GaussMethod/input.txt");
+        if (file.length() == 0) {
+            System.out.println("Файл пуст");
+        } else {
+            ArrayList<String[]> coefficients = new ArrayList<>();
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String str;
+                while ((str = reader.readLine()) != null) {
+                    if (!str.equals("")) {
+                        coefficients.add(str.split(" "));
+                    } else {
+                        int columns = coefficients.get(0).length;
+                        double[][] system = new double[coefficients.size()][columns];
+                        Iterator<String[]> iter = coefficients.iterator();
+                        for (int i = 0; i < system.length; ++i) {
+                            String[] s = iter.next();
+                            for (int j = 0; j < columns; ++j) {
+                                system[i][j] = Integer.parseInt(s[j]);
+                            }
+                        }
+                        listOfMatrices.add(system);
+                        coefficients.clear();
+                    }
+                }
+            } catch (IOException ex) {
+                System.out.println(ex.getMessage());
             }
         }
     }
@@ -63,7 +99,6 @@ public class GaussMethod {
                 }
             }
             if (numOfZeros == matrix[i].length - 1) {
-                System.out.println("Система несовместна: решений нет.");
                 isCompatibleSystem = false;
             }
         }
