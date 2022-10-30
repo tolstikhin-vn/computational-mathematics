@@ -52,8 +52,8 @@ public class HomeWork2 {
         listOfListsPoints.add(listOfPints5);
         listOfListsPoints.add(listOfPints6);
 
-        double[] points21 = new double[]{1.1, 1, 1, 0.6, -1};
-        double[] points22 = new double[]{0.4, 0.4, 0.5, 0.6, 1};
+        double[] pointsX = new double[]{1.1, 1, 1, 0.6, -1};
+        double[] PointsY = new double[]{0.4, 0.4, 0.5, 0.6, 1};
 
         LinkedHashMap<String, LinkedList<Point>> mapOfEquations = new LinkedHashMap<>();
         mapOfEquations.put(equationsStr1[0], listOfPints1);
@@ -94,12 +94,12 @@ public class HomeWork2 {
         System.out.println("\n----ЗАДАНИЕ 2.1----\n");
         System.out.println("tg(xy + A) = x^2");
         System.out.println("x^2 / a^2 + y^2 / b^2 = 1");
-        newtonMethod(points21, points22, chDerivatives21, equations21, parametersList);
+        newtonMethod(pointsX, PointsY, chDerivatives21, equations21, parametersList);
 
         System.out.println("\n----ЗАДАНИЕ 2.2----\n");
         System.out.println("x1^2 + x2^2 - 2 = 0");
         System.out.println("e^(x1 - 2) + x2^3 - 2 = 0\n");
-        newtonMethodMod2(points21, points22, chDerivatives22, equations22);
+        newtonMethodMod2(pointsX, PointsY, chDerivatives22, equations22);
     }
 
     // Метод простой итерации (для задания 1)
@@ -158,25 +158,28 @@ public class HomeWork2 {
     }
 
     // Метод Ньютона (для задания 2.1)
-    public static void newtonMethod(double[] points21, double[] points22, LinkedList<Operationable21> chDerivatives21,
+    public static void newtonMethod(double[] pointsX, double[] PointsY, LinkedList<Operationable21> chDerivatives21,
                                     LinkedList<Operationable21> equations21, LinkedList<Parameter> parametersList) {
         for (int i = 0; i < CH_DER_NUM; ++i) {
             System.out.println("\nПараметры " + i);
-            double x = points21[i];
-            double y = points22[i];
+            double x = pointsX[i];
+            double y = PointsY[i];
             int iterationNum = 1;
             double[][] a = new double[2][2];
             double dx, dy, norm1, norm2;
             double[] b = new double[2];
+            int derivativeNumber;
             do {
-                a[0][0] = chDerivatives21.get(0).calculate(x, y, parametersList.get(i).getAValue(), parametersList.get(i)
-                        .getAlphaSquaredValue(), parametersList.get(i).getBetaSquaredValue());
-                a[0][1] = chDerivatives21.get(1).calculate(x, y, parametersList.get(i).getAValue(), parametersList.get(i)
-                        .getAlphaSquaredValue(), parametersList.get(i).getBetaSquaredValue());
-                a[1][0] = chDerivatives21.get(2).calculate(x, y, parametersList.get(i).getAValue(), parametersList.get(i)
-                        .getAlphaSquaredValue(), parametersList.get(i).getBetaSquaredValue());
-                a[1][1] = chDerivatives21.get(3).calculate(x, y, parametersList.get(i).getAValue(), parametersList.get(i)
-                        .getAlphaSquaredValue(), parametersList.get(i).getBetaSquaredValue());
+                derivativeNumber = 0;
+                for (int j = 0; j < a.length; ++j) {
+                    for (int k = 0; k < a[j].length; ++k) {
+                        System.out.println(derivativeNumber);
+                        a[j][k] = chDerivatives21.get(derivativeNumber).calculate(x, y, parametersList.get(i).getAValue(), parametersList.get(i)
+                                .getAlphaSquaredValue(), parametersList.get(i).getBetaSquaredValue());
+                        ++derivativeNumber;
+                    }
+                }
+
                 obrMatrix(a);
                 dx = -a[0][0] * equations21.get(0).calculate(x, y, parametersList.get(i).getAValue(), parametersList.get(i)
                         .getAlphaSquaredValue(), parametersList.get(i).getBetaSquaredValue())
@@ -198,16 +201,20 @@ public class HomeWork2 {
                 System.out.println("x = " + String.format("%.8f", x));
                 System.out.println("y = " + String.format("%.8f", y));
                 iterationNum++;
-            }
-            while (norm1 >= EPS && norm2 >= EPS);
+            } while (norm1 >= EPS && norm2 >= EPS);
         }
     }
 
+    // Поиск частных производных
+    public static double findChDerivatives() {
+        return 0;
+    }
+
     // Метод Ньютона (для задания 2.2)
-    public static void newtonMethodMod2(double[] points21, double[] points22, LinkedList<Operationable22> chDerivatives22,
+    public static void newtonMethodMod2(double[] pointsX, double[] PointsY, LinkedList<Operationable22> chDerivatives22,
                                         LinkedList<Operationable22> equations22) {
-        double x = points21[CH_DER_NUM];
-        double y = points22[CH_DER_NUM];
+        double x = pointsX[CH_DER_NUM];
+        double y = PointsY[CH_DER_NUM];
         int iterationNum = 1;
         double[][] a = new double[2][2];
         double dx, dy, norm1, norm2;
