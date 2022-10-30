@@ -5,16 +5,17 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 public class GaussMethod {
 
-    public static void main(String[] args) {
-        LinkedList<double[][]> listOfMatrices = new LinkedList<>(); // Коллекция из массивов систем
+    public static LinkedList<double[][]> listOfMatrices;
 
-        fileReading(listOfMatrices);
+    public static void main(String[] args) {
+        listOfMatrices = new LinkedList<>(); // Коллекция из массивов систем
+
+        fileReading();
 
         // Выполнение метода Гаусса
         for (int i = 0; i < listOfMatrices.size(); ++i) {
@@ -38,8 +39,8 @@ public class GaussMethod {
     }
 
     // Чтение файла, содержащего системы уравнений
-    public static void fileReading(LinkedList<double[][]> listOfMatrices) {
-        File file = new File("GaussMethod/input.txt");
+    public static void fileReading() {
+        File file = new File("input.txt");
         if (file.length() == 0) {
             System.out.println("Файл пуст");
         } else {
@@ -50,23 +51,30 @@ public class GaussMethod {
                     if (!str.equals("")) {
                         coefficients.add(str.split(" "));
                     } else {
-                        int columns = coefficients.get(0).length;
-                        double[][] system = new double[coefficients.size()][columns];
-                        Iterator<String[]> iter = coefficients.iterator();
-                        for (int i = 0; i < system.length; ++i) {
-                            String[] s = iter.next();
-                            for (int j = 0; j < columns; ++j) {
-                                system[i][j] = Integer.parseInt(s[j]);
-                            }
-                        }
-                        listOfMatrices.add(system);
+                        fillingListOfMatrices(coefficients);
                         coefficients.clear();
                     }
                 }
+                // Заполнение последнего массива
+                fillingListOfMatrices(coefficients);
             } catch (IOException ex) {
                 System.out.println(ex.getMessage());
             }
         }
+    }
+
+    // Заполнение коллекции с массивами систем
+    public static void fillingListOfMatrices(ArrayList<String[]> coefficients) {
+        int columns = coefficients.get(0).length;
+        double[][] system = new double[coefficients.size()][columns];
+        Iterator<String[]> iter = coefficients.iterator();
+        for (int i = 0; i < system.length; ++i) {
+            String[] s = iter.next();
+            for (int j = 0; j < columns; ++j) {
+                system[i][j] = Integer.parseInt(s[j]);
+            }
+        }
+        listOfMatrices.add(system);
     }
 
     // Прямой ход метода Гаусса
