@@ -161,7 +161,7 @@ public class HomeWork2 {
     public static void newtonMethod(double[] pointsX, double[] PointsY, LinkedList<Operationable21> chDerivatives21,
                                     LinkedList<Operationable21> equations21, LinkedList<Parameter> parametersList) {
         for (int i = 0; i < CH_DER_NUM; ++i) {
-            System.out.println("\nПараметры " + i);
+            System.out.println("\nПараметры " + (i + 1));
             double x = pointsX[i];
             double y = PointsY[i];
             int iterationNum = 1;
@@ -173,7 +173,6 @@ public class HomeWork2 {
                 derivativeNumber = 0;
                 for (int j = 0; j < a.length; ++j) {
                     for (int k = 0; k < a[j].length; ++k) {
-                        System.out.println(derivativeNumber);
                         a[j][k] = chDerivatives21.get(derivativeNumber).calculate(x, y, parametersList.get(i).getAValue(), parametersList.get(i)
                                 .getAlphaSquaredValue(), parametersList.get(i).getBetaSquaredValue());
                         ++derivativeNumber;
