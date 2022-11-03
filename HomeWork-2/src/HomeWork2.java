@@ -204,11 +204,6 @@ public class HomeWork2 {
         }
     }
 
-    // Поиск частных производных
-    public static double findChDerivatives() {
-        return 0;
-    }
-
     // Метод Ньютона (для задания 2.2)
     public static void newtonMethodMod2(double[] pointsX, double[] PointsY, LinkedList<Operationable22> chDerivatives22,
                                         LinkedList<Operationable22> equations22) {
