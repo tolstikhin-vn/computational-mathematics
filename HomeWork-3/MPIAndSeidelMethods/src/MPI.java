@@ -10,9 +10,6 @@ public class MPI {
         epsilon = "10^(-" + n + ")";
         int size = matrix.length;
         previousVariableValues = new double[size];
-        for (int i = 0; i < size; ++i) {
-            previousVariableValues[i] = 0.0;
-        }
         iterationsNumber = 0;
         double d;
         // Будем выполнять итерационный процесс до тех пор, пока не будет достигнута необходимая точность

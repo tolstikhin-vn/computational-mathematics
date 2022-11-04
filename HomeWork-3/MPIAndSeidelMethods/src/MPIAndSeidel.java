@@ -26,10 +26,10 @@ public class MPIAndSeidel {
             System.out.println("Система № " + (i + 1));
             for (int degree : degrees) {
                 // Вывод результатов
-                System.out.println("Зейдель");
-                seidel.findSolution(listOfMatrices.get(i), degree);
                 System.out.println("МПИ");
                 mpi.findSolution(listOfMatrices.get(i), degree);
+                System.out.println("Зейдель");
+                seidel.findSolution(listOfMatrices.get(i), degree);
                 System.out.println();
             }
             System.out.println();
