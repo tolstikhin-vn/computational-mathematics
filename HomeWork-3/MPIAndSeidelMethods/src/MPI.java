@@ -2,16 +2,12 @@ import java.util.Arrays;
 
 public class MPI {
 
-    double[] previousVariableValues;
-    int iterationsNumber;
-    String epsilon;
-
-    public void findSolution(double[][] matrix, int n) {
-        epsilon = "10^(-" + n + ")";
+    public void findSolution(double[][] matrix, int n, int numOfNorm) {
+        String epsilon = "10^(-" + n + ")";
         int size = matrix.length;
-        previousVariableValues = new double[size];
-        iterationsNumber = 0;
-        double d;
+        double[] previousVariableValues = new double[size];
+        int iterationsNumber = 0;
+        double norm;
         // Будем выполнять итерационный процесс до тех пор, пока не будет достигнута необходимая точность
         do {
             // Введем вектор значений неизвестных на текущем шаге
@@ -32,19 +28,17 @@ public class MPI {
                 // Делим на коэффициент при i-ой неизвестной
                 currentVariableValues[i] /= matrix[i][i];
             }
-            d = 0.0;
-            for (int i = 0; i < size; ++i) {
-                d += Math.abs(currentVariableValues[i] - previousVariableValues[i]);
-            }
+            norm = MPIAndSeidel.findNorm(numOfNorm, size, currentVariableValues, previousVariableValues);
+
             // Переходим к следующей итерации, так что текущие значения неизвестных становятся значениями на предыдущей итерации
             previousVariableValues = currentVariableValues;
             ++iterationsNumber;
-        } while (d > Math.pow(10, -n));
-        System.out.println(this);
+        } while (norm > Math.pow(10, -n));
+        System.out.println(printResult(previousVariableValues, epsilon, iterationsNumber));
     }
 
-    @Override
-    public String toString() {
+    // Вывод полученных результатов
+    public String printResult(double[] previousVariableValues, String epsilon, int iterationsNumber) {
         return Arrays.toString(previousVariableValues) + " ε = " + epsilon + " итераций: " + iterationsNumber;
     }
 }
