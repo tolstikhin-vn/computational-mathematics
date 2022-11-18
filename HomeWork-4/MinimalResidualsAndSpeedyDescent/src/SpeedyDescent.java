@@ -9,7 +9,7 @@ public class SpeedyDescent {
         double[] rValues; // Вектор невязки
         double paramT; // Длина шага вдоль направления градиента
         int iterationsNumber = 0; // Количество итераций
-        double norm = 0; // Норма
+        double norm; // Норма
         int size = initialMatrix.length; // Размерность исходной матрицы
         boolean convergenceConditionIsSatisfied = true;
 
@@ -20,7 +20,7 @@ public class SpeedyDescent {
             // Определяем длину шага вдоль направления градиента
             paramT = scalarProduct(rValues, rValues) / scalarProduct(multiplyMatrices(initialMatrix, rValues), rValues);
 
-            if (paramT == 0 || norm > 100) {
+            if (paramT == 0 || iterationsNumber > 200) {
                 convergenceConditionIsSatisfied = false;
                 break;
             }
