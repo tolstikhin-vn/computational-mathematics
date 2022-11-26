@@ -22,6 +22,13 @@ public class MRAndSDMethods {
         int[] degrees = new int[]{2, 3, 4, 5, 10, 12, 15}; // Степени десятки для точности ε
         LinkedList<double[][]> listOfMatrices1 = new LinkedList<>(); // Коллекция из массивов систем
         LinkedList<double[]> listOfMatrices2 = new LinkedList<>(); // Коллекция из столбцов свободных членов
+        LinkedList<double[]> listOfSolutions = new LinkedList<>(); // Начальные приближения
+        listOfSolutions.add(new double[]{1, 1.1, -1, -1});
+        listOfSolutions.add(new double[]{-0.8, 0, 0.3, 0.7});
+        listOfSolutions.add(new double[]{0.1, 0.2, -0.1, 0.3});
+        listOfSolutions.add(new double[]{0.5, 0.7, 1.7, 1.7, 1.8});
+        listOfSolutions.add(new double[]{0.9, 1.9, 0.9, 1.9, 0.9, 1.9});
+        listOfSolutions.add(new double[]{0.4, 1.4, 0.4, 1.5, 0.2, 1.5});
 
         fileReading(listOfMatrices1, listOfMatrices2);
 
@@ -34,10 +41,10 @@ public class MRAndSDMethods {
                     System.out.println("Норма " + LIST_OF_NORMS[j]);
                     // Вывод результатов
                     System.out.println("Метод минимальных невязок");
-                    minimalResiduals.findSolution(listOfMatrices1.get(i), listOfMatrices2.get(i), degree, (j + 1));
+                    minimalResiduals.findSolution(listOfMatrices1.get(i), listOfMatrices2.get(i), listOfSolutions.get(i), degree, (j + 1));
                     System.out.println();
                     System.out.println("Метод наискорейшего спуска");
-                    speedyDescent.findSolution(listOfMatrices1.get(i), listOfMatrices2.get(i), degree, (j + 1));
+                    speedyDescent.findSolution(listOfMatrices1.get(i), listOfMatrices2.get(i), listOfSolutions.get(i), degree, (j + 1));
                     System.out.println();
                 }
             }

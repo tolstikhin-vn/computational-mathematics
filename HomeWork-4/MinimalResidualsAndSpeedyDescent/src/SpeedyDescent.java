@@ -1,10 +1,10 @@
 import java.util.Arrays;
+
 public class SpeedyDescent {
 
-    public void findSolution(double[][] initialMatrix, double[] freeMembers, int n, int numOfNorm) {
+    public void findSolution(double[][] initialMatrix, double[] freeMembers, double[] solution, int n, int numOfNorm) {
 
         String epsilon = "10^(-" + n + ")";
-        double[] currentXValues = new double[initialMatrix.length];  // Текущие приближения
         double[] prevXValues; // Предыдущие приближения
         double[] rValues; // Вектор невязки
         double paramT; // Длина шага вдоль направления градиента
@@ -12,6 +12,7 @@ public class SpeedyDescent {
         double norm; // Норма
         int size = initialMatrix.length; // Размерность исходной матрицы
         boolean convergenceConditionIsSatisfied = true;
+        double[] currentXValues = solution;  // Текущие приближения
 
         do {
             // Находим вектор невязок на текущем шаге
@@ -19,13 +20,7 @@ public class SpeedyDescent {
 
             // Определяем длину шага вдоль направления градиента
             paramT = scalarProduct(rValues, rValues) / scalarProduct(multiplyMatrices(initialMatrix, rValues), rValues);
-
-            if (paramT == 0 || iterationsNumber > 200) {
-                convergenceConditionIsSatisfied = false;
-                break;
-            }
-
-            // Инициализируем прерыдущие приближения текущими (до изменений)
+            // Инициализируем предыдущие приближения текущими (до изменений)
             prevXValues = currentXValues;
 
             // Находим новое приближение на текущем шаге
@@ -39,11 +34,7 @@ public class SpeedyDescent {
         } while (norm > Math.pow(10, -n));
 
         // Вывод результатов вычислений
-        if (convergenceConditionIsSatisfied) {
-            System.out.println(printResult(currentXValues, epsilon, iterationsNumber));
-        } else {
-            System.out.println("Метод не сходится");
-        }
+        System.out.println(printResult(currentXValues, epsilon, iterationsNumber));
     }
 
     // Вычисление разности двух матриц
