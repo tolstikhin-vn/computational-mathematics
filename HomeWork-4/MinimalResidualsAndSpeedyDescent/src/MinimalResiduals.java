@@ -11,7 +11,6 @@ public class MinimalResiduals {
         int iterationsNumber = 0; // Количество итераций
         double norm; // Норма
         int size = initialMatrix.length; // Размерность исходной матрицы
-        boolean convergenceConditionIsSatisfied = true;
         double[] currentXValues = solution;  // Текущие приближения
 
         do {
@@ -69,7 +68,7 @@ public class MinimalResiduals {
     private double[] multiplyMatrices(double[][] firstMatrix, double[] secondMatrix) {
         double[] result = new double[firstMatrix.length];
 
-        for (int row = 0; row < result.length; row++) {
+        for (int row = 0; row < result.length; ++row) {
             result[row] = multiplyMatricesCell(firstMatrix, secondMatrix, row);
         }
 
@@ -78,7 +77,7 @@ public class MinimalResiduals {
 
     double multiplyMatricesCell(double[][] firstMatrix, double[] secondMatrix, int row) {
         double cell = 0;
-        for (int i = 0; i < secondMatrix.length; i++) {
+        for (int i = 0; i < secondMatrix.length; ++i) {
             cell += firstMatrix[row][i] * secondMatrix[i];
         }
         return cell;
