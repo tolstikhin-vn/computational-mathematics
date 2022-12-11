@@ -64,8 +64,8 @@ public class MinimalResiduals {
         return residualVector;
     }
 
-    // Нахождение результата перемножения двух матрицы
-    private double[] multiplyMatrices(double[][] firstMatrix, double[] secondMatrix) {
+    // Нахождение результата перемножения двух матриц
+    public double[] multiplyMatrices(double[][] firstMatrix, double[] secondMatrix) {
         double[] result = new double[firstMatrix.length];
 
         for (int row = 0; row < result.length; ++row) {
@@ -75,7 +75,7 @@ public class MinimalResiduals {
         return result;
     }
 
-    double multiplyMatricesCell(double[][] firstMatrix, double[] secondMatrix, int row) {
+    private double multiplyMatricesCell(double[][] firstMatrix, double[] secondMatrix, int row) {
         double cell = 0;
         for (int i = 0; i < secondMatrix.length; ++i) {
             cell += firstMatrix[row][i] * secondMatrix[i];
@@ -84,7 +84,7 @@ public class MinimalResiduals {
     }
 
     // Вывод полученных результатов
-    public String printResult(double[] previousVariableValues, String epsilon, int iterationsNumber) {
+    private String printResult(double[] previousVariableValues, String epsilon, int iterationsNumber) {
         return Arrays.toString(previousVariableValues) + " ε = " + epsilon + " итераций: " + iterationsNumber;
     }
 }

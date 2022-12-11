@@ -20,22 +20,22 @@ public class MRAndSDMethods {
     public static void main(String[] args) {
 
         int[] degrees = new int[]{2, 3, 4, 5, 10, 12, 15}; // Степени десятки для точности ε
-        LinkedList<double[][]> listOfMatrices1 = new LinkedList<>(); // Коллекция из массивов систем
+        LinkedList<double[][]> listOfSourceMatrices = new LinkedList<>(); // Коллекция из массивов систем
         LinkedList<double[][]> listOfSymmetricalMatrices = new LinkedList<>();
-        LinkedList<double[]> listOfMatrices2 = new LinkedList<>(); // Коллекция из столбцов свободных членов
+        LinkedList<double[]> listOfFreeMembersColumns = new LinkedList<>(); // Коллекция из столбцов свободных членов
         LinkedList<double[]> listOfSolutions = new LinkedList<>(); // Начальные приближения
-        listOfSolutions.add(new double[]{7.1, -2.9, 1.1, -3.1});
+        listOfSolutions.add(new double[]{1.1, 1.1, -1.1, -1.1});
         listOfSolutions.add(new double[]{-0.8, 0, 0.3, 0.7});
-        listOfSolutions.add(new double[]{0, 0, 0, 0});
+        listOfSolutions.add(new double[]{0.2, 0.02, -0.2, -0.1});
         listOfSolutions.add(new double[]{0.5, 0.7, 1.7, 1.7, 1.8});
         listOfSolutions.add(new double[]{0.9, 1.9, 0.9, 1.9, 0.9, 1.9});
         listOfSolutions.add(new double[]{0.4, 1.4, 0.4, 1.5, 0.2, 1.5});
 
-        fileReading(listOfMatrices1, listOfSymmetricalMatrices, listOfMatrices2);
+        fileReading(listOfSourceMatrices, listOfSymmetricalMatrices, listOfFreeMembersColumns);
 
-        removeExtraColumns(listOfMatrices2);
+        removeExtraColumns(listOfFreeMembersColumns);
 
-        matrixSymmetrization(listOfSymmetricalMatrices, listOfMatrices1);
+        matrixSymmetrization(listOfSymmetricalMatrices, listOfSourceMatrices, listOfFreeMembersColumns);
 
         SpeedyDescent speedyDescent = new SpeedyDescent();
         MinimalResiduals minimalResiduals = new MinimalResiduals();
@@ -46,10 +46,10 @@ public class MRAndSDMethods {
                     System.out.println("Норма " + LIST_OF_NORMS[j]);
                     // Вывод результатов
                     System.out.println("Метод минимальных невязок");
-                    minimalResiduals.findSolution(listOfSymmetricalMatrices.get(i), listOfMatrices2.get(i), listOfSolutions.get(i), degree, (j + 1));
+                    minimalResiduals.findSolution(listOfSymmetricalMatrices.get(i), listOfFreeMembersColumns.get(i), listOfSolutions.get(i), degree, (j + 1));
                     System.out.println();
                     System.out.println("Метод наискорейшего спуска");
-                    speedyDescent.findSolution(listOfSymmetricalMatrices.get(i), listOfMatrices2.get(i), listOfSolutions.get(i), degree, (j + 1));
+                    speedyDescent.findSolution(listOfSymmetricalMatrices.get(i), listOfFreeMembersColumns.get(i), listOfSolutions.get(i), degree, (j + 1));
                     System.out.println();
                 }
             }
@@ -58,10 +58,14 @@ public class MRAndSDMethods {
     }
 
     // Симметризация матрицы
-    private static void matrixSymmetrization(LinkedList<double[][]> listOfSymmetricalMatrices, LinkedList<double[][]> listOfMatrices1) {
+    private static void matrixSymmetrization(LinkedList<double[][]> listOfSymmetricalMatrices, LinkedList<double[][]> listOfSourceMatrices, LinkedList<double[]> listOfFreeMembersColumns) {
+        MinimalResiduals minimalResiduals = new MinimalResiduals();
+        double[][] transposedMatrix;
         for (int i = 0; i < listOfSymmetricalMatrices.size(); ++i) {
             if (!isSymmetrical(listOfSymmetricalMatrices.get(i))) {
-                listOfSymmetricalMatrices.set(i, multiplyMatrices(listOfMatrices1.get(i), transposition(listOfSymmetricalMatrices.get(i))));
+                transposedMatrix = transposition(listOfSymmetricalMatrices.get(i));
+                listOfSymmetricalMatrices.set(i, multiplyMatrices(transposedMatrix, listOfSourceMatrices.get(i)));
+                listOfFreeMembersColumns.set(i, minimalResiduals.multiplyMatrices(transposedMatrix, listOfFreeMembersColumns.get(i)));
             }
         }
     }
@@ -113,7 +117,7 @@ public class MRAndSDMethods {
     }
 
     // Чтение файла, содержащего системы уравнений
-    public static void fileReading(LinkedList<double[][]> listOfMatrices1, LinkedList<double[][]> listOfSymmetricalMatrices, LinkedList<double[]> listOfMatrices2) {
+    public static void fileReading(LinkedList<double[][]> listOfSourceMatrices, LinkedList<double[][]> listOfSymmetricalMatrices, LinkedList<double[]> listOfFreeMembersColumns) {
         File file = new File("input.txt");
         if (file.length() == 0) {
             System.out.println("Файл пуст");
@@ -125,14 +129,14 @@ public class MRAndSDMethods {
                     if (!str.equals("")) {
                         coefficients.add(str.split(" "));
                     } else {
-                        fillingListOfMatrices(listOfMatrices1, coefficients, listOfMatrices2); // Вставляем исходные матрицы
-                        fillingListOfMatrices(listOfSymmetricalMatrices, coefficients, listOfMatrices2); // Вставляем будущие симметричные матрицы
+                        fillingListOfMatrices(listOfSourceMatrices, coefficients, listOfFreeMembersColumns); // Вставляем исходные матрицы
+                        fillingListOfMatrices(listOfSymmetricalMatrices, coefficients, listOfFreeMembersColumns); // Вставляем будущие симметричные матрицы
                         coefficients.clear();
                     }
                 }
                 // Заполнение последним массивов
-                fillingListOfMatrices(listOfMatrices1, coefficients, listOfMatrices2);
-                fillingListOfMatrices(listOfSymmetricalMatrices, coefficients, listOfMatrices2);
+                fillingListOfMatrices(listOfSourceMatrices, coefficients, listOfFreeMembersColumns);
+                fillingListOfMatrices(listOfSymmetricalMatrices, coefficients, listOfFreeMembersColumns);
             } catch (IOException ex) {
                 System.out.println(ex.getMessage());
             }
@@ -140,7 +144,7 @@ public class MRAndSDMethods {
     }
 
     // Заполнение коллекции с массивами систем
-    public static void fillingListOfMatrices(LinkedList<double[][]> listOfMatrices, ArrayList<String[]> coefficients, LinkedList<double[]> listOfMatrices2) {
+    public static void fillingListOfMatrices(LinkedList<double[][]> listOfMatrices, ArrayList<String[]> coefficients, LinkedList<double[]> listOfFreeMembersColumns) {
         int columns = coefficients.get(0).length;
         double[][] system1 = new double[coefficients.size()][columns - 1];
         double[] system2 = new double[coefficients.size()];
@@ -156,7 +160,7 @@ public class MRAndSDMethods {
             }
         }
         listOfMatrices.add(system1);
-        listOfMatrices2.add(system2);
+        listOfFreeMembersColumns.add(system2);
     }
 
     // Удаление дублирующихся столбцов свободных членов систем
