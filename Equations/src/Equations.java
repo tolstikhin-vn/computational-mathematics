@@ -17,7 +17,7 @@ public class Equations {
         double a = checkNumberA();
 
         equations.add(x -> Math.sin(x) - 2 * Math.pow(x, 2) + 0.5);
-        equations.add(x -> Math.pow(x, n - a));
+        equations.add(x -> Math.pow(x, n) - a);
         equations.add(x -> Math.sqrt(1 - Math.pow(x, 2)) - Math.exp(x) + 0.1);
         equations.add(x -> Math.pow(x, 6) - 5 * Math.pow(x, 3) - 2);
         equations.add(x -> Math.log(x) - 1 / (1 + Math.pow(x, 2)));
@@ -25,8 +25,8 @@ public class Equations {
         equations.add(x -> Math.sin(x));
         equations.add(x -> Math.log(x) - 1);
 
-        double segments[] = new double[]{0.5, 1, a, n, 0, 0.5, -1, -0.5, 1, 2, 0, 1};
-        double points[] = new double[]{0.7, 2, 0.1, -0.7, 1.4, 0.8, 3.14, 2.71};
+        double[] segments = new double[]{0.5, 1, a, n, 0, 0.5, -1, -0.5, 1, 2, 0, 1};
+        double[] points = new double[]{0.7, 2, 0.1, -0.7, 1.4, 0.8, 3.14, 2.71};
 
         findXByDichotomy(segments);
         findXByNewton(points);
@@ -91,12 +91,7 @@ public class Equations {
 
     public static void findXByNewton(double[] points) {
         for (int i = 0; i < points.length; ++i) {
-            double eps;
-            if (i <= 5) {
-                eps = eps1;
-            } else {
-                eps = eps2;
-            }
+            double eps = selectEps(i);
             System.out.println();
             System.out.println(equationsStr[i]);
             System.out.println("\nРешение методом Ньютона: ");
@@ -117,6 +112,14 @@ public class Equations {
             } while (d > eps);
         }
     }
+
+    private static double selectEps(int numOfEquation) {
+        if (numOfEquation <= 5) {
+            return eps1;
+        }
+        return eps2;
+    }
+
     interface Operationable {
         double calculate(double x);
     }
