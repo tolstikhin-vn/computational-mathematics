@@ -20,9 +20,6 @@ public class MinimalResiduals {
             rValues = (initialMatrix.operate(currentXValues)).subtract(freeMembers);
 
             // Определяем длину шага вдоль направления градиента
-            paramT = rValues.dotProduct(rValues) / (initialMatrix.operate(rValues)).dotProduct(rValues);
-
-            // Определяем длину шага вдоль направления градиента
             paramT = rValues.dotProduct(initialMatrix.operate(rValues))
                     / initialMatrix.operate(rValues).dotProduct(initialMatrix.operate(rValues));
 
