@@ -28,7 +28,7 @@ public class SpeedyDescent {
 
             double alpha_num;
             double alpha_den;
-
+            RealVector c = A.operate(xo);
             RealVector g = (A.operate(xo)).subtract(b);
 
             alpha_num = (g.dotProduct(g));
@@ -102,6 +102,9 @@ public class SpeedyDescent {
 
         for (int i = 0; i < A.size(); ++i) {
             System.out.println("\nСистема № " + (i + 1));
+            if (i + 1 == 8) {
+                System.out.println();
+            }
             for (int degree : degrees) {
                 for (int j = 0; j < NORMS_NUMBER; ++j) {
                     System.out.println("\nНорма " + LIST_OF_NORMS[j]);
@@ -158,8 +161,8 @@ public class SpeedyDescent {
         b.add(MatrixUtils.createRealVector(new double[]{-1, 0}));
         x0.add(MatrixUtils.createRealVector(new double[]{16, -19}));
 
-//        A.add(MatrixUtils.createRealMatrix(new double[][]{{400, 20, 0, -1200}, {20, 4 -96, 0}, {0, -96, 64, -10}}));
-//        b.add(MatrixUtils.createRealVector(new double[]{532400, 0, 20, -20}));
-//        x0.add(MatrixUtils.createRealVector(new double[]{-166, 89, 36, -499}));
+        A.add(MatrixUtils.createRealMatrix(new double[][]{{400, 20, 0, -1200}, {20, 4, -96, 0}, {0, -96, 64, -10}, {-1200, 0, -10, 400}}));
+        b.add(MatrixUtils.createRealVector(new double[]{532400, 0, 20, -20}));
+        x0.add(MatrixUtils.createRealVector(new double[]{-166, 89, 36, -499}));
     }
 }
