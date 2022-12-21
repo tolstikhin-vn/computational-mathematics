@@ -1,27 +1,38 @@
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.chart.Axis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.layout.Pane;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.DoubleSummaryStatistics;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.ResourceBundle;
 
-public class InterpolationPolynomial {
+public class InterpolationPolynomial implements Initializable {
 
+    @FXML
+    private Pane graphPane1;
+
+    @FXML
+    private Pane graphPane2;
+
+    @FXML
+    private Pane graphPane3;
+
+    private final double PANE_SIZE = 350.0;
     public static LinkedList<double[][]> listOfTables = new LinkedList<>();
-
-    public static void main(String[] args) {
-        LinkedList<double[]> listOfTables2 = new LinkedList<>();
-        fileReading();
-
-        splitTables(listOfTables2);
-
-        System.out.println("Лагранж");
-        System.out.println(tableLagrangeInterpolation(listOfTables2));
-
-        System.out.println("Ньютон");
-        System.out.println(tableNewtonInterpolation());
-    }
 
     // Интерполяция Лагранжа для табличной функции
     private static StringBuilder tableLagrangeInterpolation(LinkedList<double[]> listOfTables2) {
@@ -166,17 +177,40 @@ public class InterpolationPolynomial {
         return s;
     }
 
+    /**
+     * Вычислить значение полинома Лагранжа в точке
+     *
+     * @param point    точка
+     * @param xValues  массив переменных x
+     * @param yValues1 массив значений функции
+     * @return значение полинома в точке
+     */
+    private double interpolateLagrangePolynomial(double point, double[] xValues, double[] yValues1) {
+        double lagrangePol = 0;
+
+        for (int i = 0; i < xValues.length; ++i) {
+            double basicsPol = 1;
+            for (int j = 0; j < xValues.length; ++j) {
+                if (j != i) {
+                    basicsPol *= (point - xValues[j]) / (xValues[i] - xValues[j]);
+                }
+            }
+            lagrangePol += basicsPol * yValues1[i];
+        }
+        return lagrangePol;
+    }
+
     private static float getXValuesStep(double[][] table) {
         return (float) Math.abs(table[0][1] - table[0][0]);
     }
 
     // Разделить массивы на два (для x и для y) для удобства вычислений
-    private static void splitTables(LinkedList<double[]> listOfTables2) {
+    private static void splitTables(LinkedList<double[]> listOfSplitTables) {
         for (double[][] table : listOfTables) {
             for (double[] doubles : table) {
                 double[] table1 = new double[6];
                 System.arraycopy(doubles, 0, table1, 0, doubles.length);
-                listOfTables2.add(table1);
+                listOfSplitTables.add(table1);
             }
         }
     }
@@ -218,5 +252,128 @@ public class InterpolationPolynomial {
             }
         }
         listOfTables.add(table);
+    }
+
+    private void buildGraphs(LinkedList<double[]> xValuesList, LinkedList<double[]> lagrangeValuesList, LinkedList<double[]> newtonValuesList) {
+        ObservableList<XYChart.Series<Number, Number>> sl1 = FXCollections.observableArrayList();
+        ObservableList<XYChart.Series<Number, Number>> sl2 = FXCollections.observableArrayList();
+        ObservableList<XYChart.Series<Number, Number>> sl3 = FXCollections.observableArrayList();
+        LinkedList<ObservableList<XYChart.Series<Number, Number>>> listOfSeries = new LinkedList<>();
+        listOfSeries.add(sl1);
+        listOfSeries.add(sl2);
+        listOfSeries.add(sl3);
+
+        ObservableList<XYChart.Data<Number, Number>> l1 = FXCollections.observableArrayList();
+        ObservableList<XYChart.Data<Number, Number>> l2 = FXCollections.observableArrayList();
+        ObservableList<XYChart.Data<Number, Number>> l3 = FXCollections.observableArrayList();
+        ObservableList<XYChart.Data<Number, Number>> l4 = FXCollections.observableArrayList();
+        ObservableList<XYChart.Data<Number, Number>> l5 = FXCollections.observableArrayList();
+        ObservableList<XYChart.Data<Number, Number>> l6 = FXCollections.observableArrayList();
+        LinkedList<ObservableList<XYChart.Data<Number, Number>>> listOfData = new LinkedList<>();
+        listOfData.add(l1);
+        listOfData.add(l2);
+        listOfData.add(l3);
+        listOfData.add(l4);
+        listOfData.add(l5);
+        listOfData.add(l6);
+
+        for (int i = 0; i < listOfSeries.size(); ++i) {
+            int numOfData = 0;
+            for (int j = 0; j < xValuesList.get(i).length; ++j) {
+                listOfData.get(i).add(new XYChart.Data<>(xValuesList.get(i)[j], lagrangeValuesList.get(i)[j]));
+                listOfData.get(i + 3).add(new XYChart.Data<>(xValuesList.get(i)[j], newtonValuesList.get(i)[j]));
+            }
+        }
+
+        sl1.add(new XYChart.Series<>("Лагранж", l1));
+        sl1.add(new XYChart.Series<>("Ньютон", l4));
+
+        sl2.add(new XYChart.Series<>("Лагранж", l2));
+        sl2.add(new XYChart.Series<>("Ньютон", l5));
+
+        sl3.add(new XYChart.Series<>("Лагранж", l3));
+        sl3.add(new XYChart.Series<>("Ньютон", l6));
+
+        LinkedList<Axis<Number>> xAxisList = new LinkedList<>();
+
+        for (int i = 0; i < xValuesList.size(); ++i) {
+            xAxisList.add(new NumberAxis("X", xValuesList.get(i)[0], xValuesList.get(i)[xValuesList.get(i).length - 1], Math.abs(xValuesList.get(i)[1] - xValuesList.get(i)[0])));
+        }
+
+        LinkedList<Axis<Number>> yAxisList = new LinkedList<>();
+
+        DoubleSummaryStatistics stat1;
+        DoubleSummaryStatistics stat2;
+
+
+        for (int i = 0; i < listOfSeries.size(); ++i) {
+            stat1 = Arrays.stream(lagrangeValuesList.get(i)).summaryStatistics();
+            stat2 = Arrays.stream(newtonValuesList.get(i)).summaryStatistics();
+
+            yAxisList.add(new NumberAxis("Y", Math.min(stat1.getMin(),
+                    stat2.getMin()), Math.max(stat1.getMax(), stat2.getMax()),
+                    (Math.max(stat1.getMax(), stat2.getMax() - Math.min(stat1.getMin(), stat2.getMin()))) / xValuesList.get(i).length));
+        }
+
+        LineChart<Number, Number> chart1 = new LineChart<>(xAxisList.get(0), yAxisList.get(0), sl1);
+        LineChart<Number, Number> chart2 = new LineChart<>(xAxisList.get(1), yAxisList.get(1), sl2);
+        LineChart<Number, Number> chart3 = new LineChart<>(xAxisList.get(2), yAxisList.get(2), sl3);
+
+        chart1.setMaxSize(PANE_SIZE, PANE_SIZE);
+        chart1.setCreateSymbols(false);
+        chart2.setMaxSize(PANE_SIZE, PANE_SIZE);
+        chart2.setCreateSymbols(false);
+        chart3.setMaxSize(PANE_SIZE, PANE_SIZE);
+        chart3.setCreateSymbols(false);
+
+        graphPane1.getChildren().add(chart1);
+        graphPane2.getChildren().add(chart2);
+        graphPane3.getChildren().add(chart3);
+    }
+
+    private void searchValues(LinkedList<double[]> listOfSplitTables) {
+        double[] xValues, yValues;
+        LinkedList<double[]> lagrangeValuesList = new LinkedList<>();
+        LinkedList<double[]> newtonValuesList = new LinkedList<>();
+        LinkedList<double[]> xValuesList = new LinkedList<>();
+
+        for (int i = 0; i < listOfSplitTables.size(); i += 2) {
+            xValues = listOfSplitTables.get(i);
+            xValuesList.add(xValues);
+
+            yValues = listOfSplitTables.get(i + 1);
+
+            double[][] finiteDifferences = findFiniteDifferences(xValues, yValues);
+            double[] coefficients = findNewtonCoefficients(finiteDifferences);
+
+            double[] yValuesLagrange = new double[xValues.length];
+            double[] yValuesNewton = new double[xValues.length];
+            int degree = xValues.length - 1; // Степень интерполяционного многочлена Ньютона
+
+            for (int j = 0; j < yValues.length; ++j) {
+                yValuesLagrange[j] = interpolateLagrangePolynomial(xValues[j], xValues, yValues);
+                yValuesNewton[j] = newtonPolValue(degree, xValues, coefficients, xValues[j]);
+            }
+            lagrangeValuesList.add(yValuesLagrange);
+            newtonValuesList.add(yValuesNewton);
+        }
+
+        buildGraphs(xValuesList, lagrangeValuesList, newtonValuesList);
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        LinkedList<double[]> listOfSplitTables = new LinkedList<>();
+        fileReading();
+
+        splitTables(listOfSplitTables);
+
+        System.out.println("Лагранж");
+        System.out.println(tableLagrangeInterpolation(listOfSplitTables));
+
+        System.out.println("Ньютон");
+        System.out.println(tableNewtonInterpolation());
+
+        searchValues(listOfSplitTables);
     }
 }
