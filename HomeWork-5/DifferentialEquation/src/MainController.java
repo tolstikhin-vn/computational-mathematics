@@ -451,7 +451,7 @@ public class MainController implements Initializable {
     }
 
     /**
-     * Найти значение опредленного интеграла методом треугольников (средних)
+     * Найти значение опредленного интеграла методом прямоугольников (средних)
      *
      * @param yRungeKuttaValues подынтегральные значения
      * @return значение определенного интеграла
@@ -459,7 +459,7 @@ public class MainController implements Initializable {
     private double rectangleMethod(double[] yRungeKuttaValues) {
         double sum = 0;
         for (double y : yRungeKuttaValues) {
-            sum += Math.abs(y);
+            sum += Math.abs(y + STEP_H / 2);
         }
         return STEP_H * sum;
     }
