@@ -12,6 +12,8 @@ public class HomeWork2 {
     public static final double STEP = 0.5;
     public static final int CH_DER_NUM = 4;
 
+    private static final double LAMBDA = 0.01;
+
     public static void main(String[] args) {
 
         LinkedList<Operationable1> equations1 = new LinkedList<>(); // Исходные уравнения задания 1
@@ -89,7 +91,7 @@ public class HomeWork2 {
 
         System.out.println("----ЗАДАНИЕ 1----");
         findSegments(equations1, listOfListsPoints);
-        simpleIterationMethod(mapOfEquations, equations1, firstDerivatives1);
+        simpleIterationMethod(mapOfEquations, equations1);
 
         System.out.println("\n----ЗАДАНИЕ 2.1----\n");
         System.out.println("tg(xy + A) = x^2");
@@ -104,8 +106,7 @@ public class HomeWork2 {
 
     // Метод простой итерации (для задания 1)
     public static void simpleIterationMethod(LinkedHashMap<String, LinkedList<Point>> mapOfEquations,
-                                             LinkedList<Operationable1> equations1,
-                                             LinkedList<Operationable1> firstDerivatives1) {
+                                             LinkedList<Operationable1> equations1) {
         int equationNumber = 0;
         for (Map.Entry<String, LinkedList<Point>> entry : mapOfEquations.entrySet()) {
             System.out.println();
@@ -115,10 +116,9 @@ public class HomeWork2 {
                 double x1, d;
                 int iterationNum = 1;
                 double x0 = entry.getValue().get(i).getX();
-                double lambda = 1 / firstDerivatives1.get(equationNumber).calculate(x0);
                 do {
                     x1 = x0;
-                    x0 = x1 - lambda * equations1.get(equationNumber).calculate(x1);
+                    x0 = x1 - LAMBDA * equations1.get(equationNumber).calculate(x1);
                     d = Math.abs(x0 - x1);
                     System.out.println("Итерация №" + iterationNum);
                     System.out.println("x = " + String.format("%.8f", x0));
@@ -180,6 +180,7 @@ public class HomeWork2 {
                 }
 
                 obrMatrix(a);
+                // dx, dy - поправки, приращения
                 dx = -a[0][0] * equations21.get(0).calculate(x, y, parametersList.get(i).getAValue(), parametersList.get(i)
                         .getAlphaSquaredValue(), parametersList.get(i).getBetaSquaredValue())
                         + -a[0][1] * equations21.get(1).calculate(x, y, parametersList.get(i).getAValue(), parametersList
