@@ -5,6 +5,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.chart.Axis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.RadioButton;
 import javafx.scene.input.MouseEvent;
@@ -17,14 +18,14 @@ import java.util.LinkedList;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
-    private final double SEGMENT_START = 0;
-    private final double SEGMENT_END_FOR_ONE = 1000;
-    private final double SEGMENT_END_FOR_TWO = 2;
+    private final float SEGMENT_START = 0;
+    private final float SEGMENT_END_FOR_ONE = 1000;
+    private final float SEGMENT_END_FOR_TWO = 10;
 
     private final int NUMBER_OF_INTERVALS_FOR_ONE = 20000;
-    private final int NUMBER_OF_INTERVALS_FOR_TWO = 40;
+    private final int NUMBER_OF_INTERVALS_FOR_TWO = 10000;
 
-    private final double FIELD_SIZE = 470.0;
+    private final double FIELD_SIZE = 420.0;
 
     private final double m1 = 100000;
     private final double m2 = 1000;
@@ -64,7 +65,10 @@ public class MainController implements Initializable {
     private LinkedList<InitialCondition> initialConditionsList;
 
     @FXML
-    private Pane graphPane;
+    private Pane graphPane1;
+
+    @FXML
+    private Pane graphPane2;
 
     @FXML
     private RadioButton radioButton1;
@@ -85,23 +89,26 @@ public class MainController implements Initializable {
     private RadioButton radioButton6;
 
     @FXML
-    void searchForAllValues(MouseEvent event) {
-        graphPane.getChildren().clear(); // Очищаем поля перед отрисовкой новых графиков
+    public void searchForAllValues(MouseEvent event) {
+        // Очищаем поля перед отрисовкой новых графиков
+        graphPane1.getChildren().clear();
+        graphPane2.getChildren().clear();
         if (!isSystem()) {
-            double[] xValues = generateXValues(false);
+            float[] xValues = generateXValues(false);
             Operation currFunction = getSelectedFunction();
             double[] yEulerValues = euler(currFunction, xValues);
             double[] yRungeKuttaValues = rungeKutta(currFunction, xValues);
             buildGraphs(xValues, yEulerValues, yRungeKuttaValues, false);
             solveIntegral(currFunction, yRungeKuttaValues);
         } else {
-            double[] xValues = generateXValues(true);
-//            double[][] yEulerForSystem = eulerForSystem(getEquationIndex(), xValues);
+            float[] xValues = generateXValues(true);
+            double[][] yEulerForSystem = eulerForSystem(getEquationIndex(), xValues);
             double[][] yRungeKuttaValuesForSystem = rungeKuttaForSystem(getEquationIndex(), xValues);
-            if (getInitialConditionsIndex() != 6) {
-//                buildGraphs(xValues, getFxValues(yEulerForSystem, 0), getFxValues(yEulerForSystem, 1), true);
-                buildGraphs(xValues, getFxValues(yRungeKuttaValuesForSystem, 0), getFxValues(yRungeKuttaValuesForSystem, 1), true);
-            } else {
+
+            if (getInitialConditionsIndex() == 4) {
+                buildGraphs(xValues, getFxValues(yEulerForSystem, 0), getFxValues(yEulerForSystem, 1), true);
+//                buildGraphs(xValues, getFxValues(yRungeKuttaValuesForSystem, 0), getFxValues(yRungeKuttaValuesForSystem, 1), true);
+            } else if (getInitialConditionsIndex() == 5) {
                 double[][] yEulerValuesForSystem2 = eulerForSystem(getEquationIndex() + 2, xValues);
 //                buildGraphs(xValues, getFxValues(yEulerForSystem, 0), getFxValues(yEulerValuesForSystem2, 0), true);
                 double[][] yRungeKuttaValuesForSystem2 = rungeKuttaForSystem(getEquationIndex() + 2, xValues);
@@ -168,7 +175,7 @@ public class MainController implements Initializable {
      * @param xValues      значения переменной x
      * @return значения функции
      */
-    private double[] euler(Operation currFunction, double[] xValues) {
+    private double[] euler(Operation currFunction, float[] xValues) {
         double[] fxValues = new double[xValues.length];
         double fx = initialConditionsList.get(getInitialConditionsIndex()).getFxValue();
         fxValues[0] = fx;
@@ -179,7 +186,7 @@ public class MainController implements Initializable {
         return fxValues;
     }
 
-    private double[][] eulerForSystem(int index, double[] xValues) {
+    private double[][] eulerForSystem(int index, float[] xValues) {
         double[][] fxValues = new double[2][xValues.length];
         double fx1 = initialConditionsList.get(getInitialConditionsIndex()).getFxValue();
         double fx2 = initialConditionsList.get(getInitialConditionsIndex() + 1).getFxValue();
@@ -204,7 +211,7 @@ public class MainController implements Initializable {
      * @param xValues      значения переменной x
      * @return значения функции
      */
-    private double[] rungeKutta(Operation currFunction, double[] xValues) {
+    private double[] rungeKutta(Operation currFunction, float[] xValues) {
         double[] fxValues = new double[xValues.length];
         double fx = initialConditionsList.get(getInitialConditionsIndex()).getFxValue();
         fxValues[0] = fx;
@@ -227,7 +234,7 @@ public class MainController implements Initializable {
      * @param xValues значения переменной x
      * @return значения системы уравнений
      */
-    private double[][] rungeKuttaForSystem(int index, double[] xValues) {
+    private double[][] rungeKuttaForSystem(int index, float[] xValues) {
         double[][] fxValues = new double[2][xValues.length];
         double fx1 = initialConditionsList.get(getInitialConditionsIndex()).getFxValue();
         double fx2 = initialConditionsList.get(getInitialConditionsIndex() + 1).getFxValue();
@@ -263,7 +270,7 @@ public class MainController implements Initializable {
      * @param isSystem true, если система, иначе - false
      * @return значения переменной x
      */
-    private double[] generateXValues(boolean isSystem) {
+    private float[] generateXValues(boolean isSystem) {
         int size;
         if (!isSystem) {
             STEP_H = (SEGMENT_END_FOR_ONE - SEGMENT_START) / NUMBER_OF_INTERVALS_FOR_ONE;
@@ -272,9 +279,9 @@ public class MainController implements Initializable {
             STEP_H = (SEGMENT_END_FOR_TWO - SEGMENT_START) / NUMBER_OF_INTERVALS_FOR_TWO;
             size = (int) ((SEGMENT_END_FOR_TWO - SEGMENT_START) / STEP_H);
         }
-        double[] xValues = new double[size];
+        float[] xValues = new float[size + 1];
 
-        double x = 0;
+        float x = SEGMENT_START;
         for (int i = 0; i < xValues.length; ++i) {
             xValues[i] = x;
             x += STEP_H;
@@ -290,10 +297,8 @@ public class MainController implements Initializable {
      * @param y2Values решения второго уравнения (если это система)
      * @param isSystem true, если система, иначе - false
      */
-    private void buildGraphs(double[] xValues, double[] y1Values, double[] y2Values, boolean isSystem) {
-
-        ObservableList<XYChart.Series<Number, Number>> sl = FXCollections.observableArrayList();
-
+    private void buildGraphs(float[] xValues, double[] y1Values, double[] y2Values, boolean isSystem) {
+        ObservableList<XYChart.Series<Number, Number>> sl1 = FXCollections.observableArrayList();
         ObservableList<XYChart.Data<Number, Number>> l1 = FXCollections.observableArrayList();
 
         for (int i = 0; i < xValues.length; ++i) {
@@ -307,30 +312,53 @@ public class MainController implements Initializable {
         }
 
         if (!isSystem) {
-            sl.add(new XYChart.Series<>("Эйлер", l1));
-            sl.add(new XYChart.Series<>("Рунге-Кутта", l2));
+            sl1.add(new XYChart.Series<>("Эйлер", l1));
+            sl1.add(new XYChart.Series<>("Рунге-Кутта", l2));
         } else {
-            sl.add(new XYChart.Series<>("Уравнение 1", l1));
-            sl.add(new XYChart.Series<>("Уравнение 2", l2));
+            sl1.add(new XYChart.Series<>("Уравнение 1", l1));
+            sl1.add(new XYChart.Series<>("Уравнение 2", l2));
+
+            NumberAxis xy1 = new NumberAxis();
+            xy1.setLabel("X1");
+
+            NumberAxis xy2 = new NumberAxis();
+            xy2.setLabel("X2");
+
+            ScatterChart<Number, Number> l3 = new ScatterChart<>(xy1, xy2);
+
+            XYChart.Series<Number, Number> sr = new XYChart.Series<>();
+
+            sr.setName("График 2");
+
+            for (int i = 0; i < xValues.length; ++i) {
+                sr.getData().add(new XYChart.Data<>( y1Values[i], y2Values[i]));
+            }
+            l3.getData().add(sr);
+            l3.setMaxSize(FIELD_SIZE, FIELD_SIZE);
+            graphPane2.getChildren().add(l3);
         }
 
         DoubleSummaryStatistics stat1 = Arrays.stream(y1Values).summaryStatistics();
         DoubleSummaryStatistics stat2 = Arrays.stream(y2Values).summaryStatistics();
 
         // Создаем оси линейных графиков
-        Axis<Number> x;
+        Axis<Number> x1;
         if (!isSystem) {
-            x = new NumberAxis("X", SEGMENT_START, SEGMENT_END_FOR_ONE, STEP_H);
+            x1 = new NumberAxis("t", SEGMENT_START, SEGMENT_END_FOR_ONE, (SEGMENT_END_FOR_ONE - SEGMENT_START) / 10);
         } else {
-            x = new NumberAxis("X", SEGMENT_START, SEGMENT_END_FOR_TWO, STEP_H);
+            x1 = new NumberAxis("t", SEGMENT_START, SEGMENT_END_FOR_TWO, (SEGMENT_END_FOR_TWO - SEGMENT_START) / 10);
         }
-        Axis<Number> y = new NumberAxis("Y", Math.min(stat1.getMin(), stat2.getMin()), Math.max(stat1.getMax(), stat2.getMax()), STEP_H);
-        LineChart<Number, Number> chart = new LineChart<>(x, y, sl);
+        Axis<Number> y1 = new NumberAxis("Y",
+                Math.min(stat1.getMin(), stat2.getMin()),
+                Math.max(stat1.getMax(), stat2.getMax()),
+                (Math.max(stat1.getMax(), stat2.getMax() -  Math.min(stat1.getMin(), stat2.getMin()))) / 10);
+        LineChart<Number, Number> chart1 = new LineChart<>(x1, y1, sl1);
+        chart1.setMaxSize(FIELD_SIZE, FIELD_SIZE);
+        chart1.setCreateSymbols(false);
 
-        chart.setMaxSize(FIELD_SIZE, FIELD_SIZE);
-        chart.setCreateSymbols(false);
+        graphPane1.getChildren().add(chart1);
 
-        graphPane.getChildren().add(chart);
+        System.out.println();
     }
 
     /**
@@ -368,7 +396,7 @@ public class MainController implements Initializable {
         } else if (radioButton5.isSelected()) {
             return 4;
         } else if (radioButton6.isSelected()) {
-            return 6;
+            return 5;
         }
         return 0;
     }

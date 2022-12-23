@@ -9,9 +9,9 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="510.0" prefWidth="776.0" style="-fx-background-color: #fff;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="510.0" prefWidth="1137.0" style="-fx-background-color: #fff;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainController">
    <children>
-      <Pane fx:id="graphPane" layoutX="291.0" layoutY="20.0" prefHeight="470.0" prefWidth="470.0" style="-fx-border-color: red;" />
+      <Pane fx:id="graphPane1" layoutX="281.0" layoutY="45.0" prefHeight="420.0" prefWidth="420.0" style="-fx-border-color: red;" />
       <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="38.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../images/1.png" />
@@ -42,20 +42,21 @@
             <Image url="@../images/6.png" />
          </image>
       </ImageView>
-      <RadioButton fx:id="radioButton1" layoutX="19.0" layoutY="47.0" mnemonicParsing="false">
+      <RadioButton fx:id="radioButton1" focusTraversable="false" layoutX="19.0" layoutY="47.0" mnemonicParsing="false">
          <toggleGroup>
             <ToggleGroup fx:id="rbGroup" />
          </toggleGroup>
       </RadioButton>
-      <RadioButton fx:id="radioButton2" layoutX="19.0" layoutY="123.0" mnemonicParsing="false" toggleGroup="$rbGroup" />
-      <RadioButton fx:id="radioButton3" layoutX="19.0" layoutY="183.0" mnemonicParsing="false" toggleGroup="$rbGroup" />
-      <RadioButton fx:id="radioButton4" layoutX="19.0" layoutY="245.0" mnemonicParsing="false" toggleGroup="$rbGroup" />
-      <RadioButton fx:id="radioButton5" layoutX="19.0" layoutY="309.0" mnemonicParsing="false" toggleGroup="$rbGroup" />
-      <RadioButton fx:id="radioButton6" layoutX="19.0" layoutY="374.0" mnemonicParsing="false" toggleGroup="$rbGroup" />
+      <RadioButton fx:id="radioButton2" focusTraversable="false" layoutX="19.0" layoutY="123.0" mnemonicParsing="false" toggleGroup="$rbGroup" />
+      <RadioButton fx:id="radioButton3" focusTraversable="false" layoutX="19.0" layoutY="183.0" mnemonicParsing="false" toggleGroup="$rbGroup" />
+      <RadioButton fx:id="radioButton4" focusTraversable="false" layoutX="19.0" layoutY="245.0" mnemonicParsing="false" toggleGroup="$rbGroup" />
+      <RadioButton fx:id="radioButton5" focusTraversable="false" layoutX="19.0" layoutY="309.0" mnemonicParsing="false" toggleGroup="$rbGroup" />
+      <RadioButton fx:id="radioButton6" focusTraversable="false" layoutX="19.0" layoutY="374.0" mnemonicParsing="false" toggleGroup="$rbGroup" />
       <Button layoutX="35.0" layoutY="446.0" mnemonicParsing="false" onMouseClicked="#searchForAllValues" style="-fx-background-color: red; -fx-cursor: hand;" text="ПОСТРОИТЬ" textFill="WHITE">
          <font>
             <Font name="System Bold" size="15.0" />
          </font>
       </Button>
+      <Pane fx:id="graphPane2" layoutX="709.0" layoutY="45.0" prefHeight="420.0" prefWidth="420.0" style="-fx-border-color: red;" stylesheets="@../css/style.css" />
    </children>
 </AnchorPane>
